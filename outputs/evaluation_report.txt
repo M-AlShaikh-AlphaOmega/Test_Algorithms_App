@@ -1,0 +1,11 @@
+Task: walk_hold_left
+CV Mean Accuracy: 0.8209
+
+              precision    recall  f1-score   support
+
+          ON       0.87      0.76      0.81        17
+         OFF       0.83      0.91      0.87        22
+
+    accuracy                           0.85        39
+   macro avg       0.85      0.84      0.84        39
+weighted avg       0.85      0.85      0.84        39
