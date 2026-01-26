@@ -182,3 +182,5 @@ cython_debug/
 
 # Dataset
 Data
+rw_backup
+decoded_csv
