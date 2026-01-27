@@ -6,8 +6,10 @@ This project specializes in detecting the **"OFF" state** in Parkinson's patient
 ## 2. Project Structure
 ```
 Test_Algorithms_App/
-├── RandomForest_Test_Train.py   # Main ML pipeline for Parkinson's detection
+├── RandomForest.py              # ML pipeline for decoded_csv data (recommended)
+├── RandomForest_Test_Train.py   # ML pipeline for Data/ folder (legacy)
 ├── Decode_Dataset.py            # Decodes raw binary IMU data to CSV
+├── labels_template.csv          # Template for user labels
 ├── requirements.txt             # Python dependencies
 ├── README.md                    # This file
 ├── Data/                        # Processed CSV data for ML training
@@ -195,7 +197,76 @@ if data is not None:
     print(f"Ax range: {data['Ax'].min():.3f} to {data['Ax'].max():.3f} m/s²")
 ```
 
-## 10. Outputs & File Explanations
+## 10. Training with Decoded Data (RandomForest.py)
+This is the recommended pipeline for training on decoded IMU data from `decoded_csv/`.
+
+### Prerequisites
+1. Decode raw data first: `python Decode_Dataset.py`
+2. Create a labels file mapping user IDs to classes
+
+### Labels File Format
+Create a CSV file (e.g., `labels.csv`) with user labels:
+```csv
+user_id,label
+oA9zb5Jvsia7Tl9fTnqhYzLhkXUo,1
+akwn2joina1,0
+oA9zb5Au-No3klQwjuY28POhL7U0,1
+```
+- `user_id`: Folder name in `decoded_csv/`
+- `label`: 0 = ON medication, 1 = OFF medication
+
+A template is provided: `labels_template.csv`
+
+### Run the Pipeline
+```bash
+python RandomForest.py --labels labels.csv
+```
+
+### CLI Arguments
+| Argument | Default | Description |
+|----------|---------|-------------|
+| `--data` | `decoded_csv` | Path to decoded CSV directory |
+| `--output` | `outputs` | Path to output directory |
+| `--labels` | (required) | Path to labels CSV file |
+| `--fs` | `32` | Sampling frequency in Hz |
+| `--window` | `320` | Window size in samples |
+| `--features` | `15` | Number of top features to select |
+| `--fast` | `false` | Skip plot generation |
+
+### Examples
+```bash
+# Basic usage
+python RandomForest.py --labels labels.csv
+
+# Custom settings
+python RandomForest.py --data decoded_csv --labels labels.csv --window 256 --features 20
+
+# Fast mode (no plots)
+python RandomForest.py --labels labels.csv --fast
+```
+
+### Architecture & Design Patterns
+The `RandomForest.py` pipeline implements:
+
+**Design Patterns:**
+- **Strategy Pattern**: `FeatureExtractor` abstract class with `StatisticalExtractor`, `GaitExtractor`, `FrequencyExtractor`
+- **Composition**: `Pipeline` coordinates `Preprocessor`, `WindowSegmenter`, `FeatureExtractorCoordinator`, `ModelManager`
+- **Config Pattern**: Dataclasses (`PipelineConfig`, `FilterConfig`, `WindowConfig`, `ModelConfig`)
+
+**SOLID Principles:**
+- **SRP**: Each class has one responsibility (e.g., `DataLoader` only loads data)
+- **OCP**: Add new extractors without modifying existing code
+- **LSP**: All extractors implement `FeatureExtractor` interface
+- **DIP**: `Pipeline` depends on abstractions, not concrete implementations
+
+**Features Extracted:**
+| Category | Features |
+|----------|----------|
+| Statistical | mean, std, min, max, range, rms, skew, kurtosis, iqr, median |
+| Gait | steps, step_time, cadence, step_regularity, arm_swing |
+| Frequency | dominant_freq, spectral_energy, spectral_centroid |
+
+## 11. Outputs & File Explanations
 Results are saved in the `outputs/` folder. Each file serves a specific role in the analysis:
 
 - **`extracted_features.csv`**: 

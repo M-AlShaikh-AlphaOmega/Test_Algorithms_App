@@ -1,11 +1,41 @@
-Task: walk_hold_left
-CV Mean Accuracy: 0.8209
+============================================================
+PARKINSON'S DETECTION - EVALUATION REPORT
+============================================================
 
+MODEL PERFORMANCE
+----------------------------------------
+Test Accuracy: 1.0000
+ROC AUC Score: 1.0000
+
+Cross-Validation Accuracy: 1.0000 (+/- 0.0000)
+
+
+CLASSIFICATION REPORT
+----------------------------------------
               precision    recall  f1-score   support
 
-          ON       0.87      0.76      0.81        17
-         OFF       0.83      0.91      0.87        22
+          ON       1.00      1.00      1.00        15
+         OFF       1.00      1.00      1.00        15
 
-    accuracy                           0.85        39
-   macro avg       0.85      0.84      0.84        39
-weighted avg       0.85      0.85      0.84        39
+    accuracy                           1.00        30
+   macro avg       1.00      1.00      1.00        30
+weighted avg       1.00      1.00      1.00        30
+
+
+SELECTED FEATURES
+----------------------------------------
+ 1. acc_Ax_mean
+ 2. gyro_Gy_median
+ 3. acc_Ax_median
+ 4. acc_Ax_max
+ 5. acc_Ax_min
+ 6. gyro_Gz_median
+ 7. gyro_Gy_mean
+ 8. acc_Ay_max
+ 9. acc_mag_rms
+10. acc_mag_mean
+11. gyro_Gx_median
+12. acc_mag_median
+13. gyro_mag_min
+14. gyro_Gz_mean
+15. gyro_Gx_rms

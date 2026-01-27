@@ -3,7 +3,8 @@
     "allow": [
       "Bash(python:*)",
       "Bash(source venv/Scripts/activate)",
-      "Bash(./venv/Scripts/python:*)"
+      "Bash(./venv/Scripts/python:*)",
+      "Bash(ls:*)"
     ]
   }
 }

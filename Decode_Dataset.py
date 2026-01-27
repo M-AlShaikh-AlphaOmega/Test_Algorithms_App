@@ -1,17 +1,59 @@
-# this script processes binary IMU data files from a backup directory,
-# decodes them into physical units, and saves the results as CSV files.
-# It handles multiple user directories and provides summary statistics upon completion.
-# It skips files that are incomplete or invalid.
-# put the rw_backup directory in the same folder as this script before running.
+"""
+Decode Dataset - Binary IMU Data Decoder
 
-import os
+This script processes binary IMU data files from the rw_backup directory,
+decodes them into physical units (m/s² for accelerometer, rad/s for gyroscope),
+and saves the results as CSV files.
+
+Usage:
+    python Decode_Dataset.py
+
+Requirements:
+    - Place rw_backup/ folder in the same directory as this script
+    - numpy must be installed
+
+Binary Format:
+    - Data stored as float32 (4 bytes per value)
+    - 6 values per sample: Ax, Ay, Az, Gx, Gy, Gz
+    - Sampling rate: 32 Hz
+
+Conversion Factors:
+    - Accelerometer: raw * 9.807 / 4096 (m/s²)
+    - Gyroscope: raw * π / (32 * 180) (rad/s)
+
+Output:
+    decoded_csv/
+    ├── <user_id_1>/
+    │   ├── <timestamp>.csv
+    │   └── ...
+    └── <user_id_2>/
+        └── ...
+
+Author: ACare Project
+"""
+
 import csv
 import numpy as np
 from pathlib import Path
+from typing import Dict, Optional
 
 
-def decode_and_convert(file_path):
-    """Decode a binary IMU file and convert to physical units."""
+def decode_and_convert(file_path: Path) -> Optional[Dict[str, np.ndarray]]:
+    """
+    Decode a binary IMU file and convert to physical units.
+
+    Args:
+        file_path: Path to the binary IMU file
+
+    Returns:
+        Dictionary with keys 'Ax', 'Ay', 'Az', 'Gx', 'Gy', 'Gz' containing
+        numpy arrays of sensor values in physical units, or None if file is invalid.
+
+    Example:
+        >>> data = decode_and_convert(Path("rw_backup/user/timestamp"))
+        >>> if data:
+        ...     print(f"Samples: {len(data['Ax'])}")
+    """
     try:
         with open(file_path, 'rb') as f:
             raw = f.read()
@@ -45,7 +87,13 @@ def decode_and_convert(file_path):
         return None
 
 
-def main():
+def main() -> None:
+    """
+    Main function to decode all binary IMU files in rw_backup directory.
+
+    Processes all user directories and saves decoded CSV files to decoded_csv/.
+    Prints summary statistics upon completion.
+    """
     rw_backup = Path('rw_backup')
     output_dir = Path('decoded_csv')
     output_dir.mkdir(exist_ok=True)
