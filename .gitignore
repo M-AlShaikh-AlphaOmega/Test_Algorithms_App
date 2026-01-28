@@ -184,3 +184,8 @@ cython_debug/
 Data
 rw_backup
 decoded_csv
+
+# Review and audit artifacts (temporary)
+*_REVIEW.md
+*_AUDIT.md
+*_SUMMARY.md
