@@ -1,0 +1,26 @@
+{
+ "ver":"0.1",
+ "sample_count":273,
+ "freq":"25",
+ "unix_timestamp":"1769656943.512549",
+ "source":["acc"],
+ "data_order" : "xyz",
+ 
+ 
+ 
+ 
+ "cmt 1":"======================================================================================",
+ "        || Below are field descriptions for reference only. They will not show in real data ||":"",
+ "cmt 2":"======================================================================================",
+ 
+ "Desc of ver" : "Data protocol version. Will document once protocol is stable with hardware manufacturerd",
+ 
+ "Desc of sample_count" : "Total numeric float values in binary file. Since most accelerometer and gyroscope are 3-axis, this field is dividable by 3",
+ "Desc of freq" : "Data sample rate. It's a target sample rate which could vary in reality with 1-2 Hz. However, labeling timestamp for each sample in 20+Hz makes the data too large and excessive. So the exact time stamp for each sample other than the first one in packet is an approximation. We will keep each packet in around 5 seconds so the error of approximation will not be high.",
+ 
+ "Desc of unix_timestamp" : "Unix time stamp. It's the seconds elapsed since 00:00:00 Jan 1st 1970 at UTC+0. It's globally unique and convertable to any time format.",
+ 
+ "Desc of source" : "acc=accelerometer, gyro=gyroscope",
+ 
+ "Desc of data_order" : "Sample from X axis comes first, then Y, then Z. If there is more sensors data in sample, order in 'source' field prevail in one sample. For example, assume a case acc+gyro. The data will have the following order: accX1,accY1,accZ1,gyroX1,gyroY1,gyroZ1,accX2,accY2,accZ2,gyroX2,gyroY2,gyroZ2,..."
+ }
