@@ -5,9 +5,9 @@ Decodes sensor data files for Parkinson's disease monitoring.
 Supports both binary and JSON formats.
 
 Usage:
-    python Decode_SampleDataset_Jan-29.py meta_1769656943.json
-    python Decode_SampleDataset_Jan-29.py meta_1769656943.json --output results.csv
-    python Decode_SampleDataset_Jan-29.py --json raw.json --meta meta_1769656943.json
+    python Decode_SampleDataset_Jan-29.py meta_Data_Jan-29.json
+    python Decode_SampleDataset_Jan-29.py meta_Data_Jan-29.json --output results.csv
+    python Decode_SampleDataset_Jan-29.py --json raw.json --meta meta_Data_Jan-29.json
 """
 
 import struct
@@ -61,7 +61,7 @@ def validate_metadata(meta: Dict) -> None:
 def get_binary_filepath(meta_filepath: str) -> Path:
     """
     Find binary data file based on meta filename.
-    Example: meta_1769656943.json -> 1769656943
+    Example: meta_Data_Jan-29.json -> Data_Jan-29
 
     Returns:
         Path to binary file (no extension)
@@ -69,7 +69,7 @@ def get_binary_filepath(meta_filepath: str) -> Path:
     meta_path = Path(meta_filepath)
 
     # Remove 'meta_' prefix to get data filename
-    meta_name = meta_path.stem  # e.g., 'meta_1769656943'
+    meta_name = meta_path.stem  # e.g., 'meta_Data_Jan-29'
     if meta_name.startswith('meta_'):
         data_name = meta_name.replace('meta_', '')
     else:
@@ -240,9 +240,9 @@ def decode_sensor_file(meta_filepath: str, output_csv: Optional[str] = None,
         Tuple of (DataFrame with sensor data, metadata dict)
 
     Example:
-        >>> df, meta = decode_sensor_file('meta_1769656943.json')
-        >>> df, meta = decode_sensor_file('meta_1769656943.json', 'output.csv')
-        >>> df, meta = decode_sensor_file('meta_1769656943.json', json_filepath='raw.json')
+        >>> df, meta = decode_sensor_file('meta_Data_Jan-29.json')
+        >>> df, meta = decode_sensor_file('meta_Data_Jan-29.json', 'output.csv')
+        >>> df, meta = decode_sensor_file('meta_Data_Jan-29.json', json_filepath='raw.json')
     """
     try:
         if verbose:
@@ -348,13 +348,13 @@ Usage:
     python Decode_SampleDataset_Jan-29.py --json <raw.json> --meta <meta_file.json> [--output <file.csv>]
 
 Examples:
-    python Decode_SampleDataset_Jan-29.py meta_1769656943.json
-    python Decode_SampleDataset_Jan-29.py meta_1769656943.json --output results.csv
-    python Decode_SampleDataset_Jan-29.py --json raw.json --meta meta_1769656943.json
+    python Decode_SampleDataset_Jan-29.py meta_Data_Jan-29.json
+    python Decode_SampleDataset_Jan-29.py meta_Data_Jan-29.json --output results.csv
+    python Decode_SampleDataset_Jan-29.py --json raw.json --meta meta_Data_Jan-29.json
 
 Required files:
-    - meta_1769656943.json  (metadata)
-    - 1769656943            (binary data) OR raw.json (JSON data)
+    - meta_Data_Jan-29.json  (metadata)
+    - Data_Jan-29            (binary data) OR raw.json (JSON data)
         """)
         sys.exit(1)
 

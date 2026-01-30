@@ -6,7 +6,7 @@ Guide for decoding aCare sensor data files.
 
 ## Files Overview
 
-### 1. meta_1769656943.json (Metadata)
+### 1. meta_Data_Jan-29.json (Metadata)
 Contains information about the data structure.
 
 **Fields:**
@@ -145,17 +145,17 @@ pip install pandas numpy
 
 **Basic (from binary):**
 ```bash
-python Decode_SampleDataset_Jan-29.py meta_1769656943.json
+python Decode_SampleDataset_Jan-29.py meta_Data_Jan-29.json
 ```
 
 **Save CSV:**
 ```bash
-python Decode_SampleDataset_Jan-29.py meta_1769656943.json --output results.csv
+python Decode_SampleDataset_Jan-29.py meta_Data_Jan-29.json --output results.csv
 ```
 
 **From JSON:**
 ```bash
-python Decode_SampleDataset_Jan-29.py --json raw.json --meta meta_1769656943.json
+python Decode_SampleDataset_Jan-29.py --json raw.json --meta meta_Data_Jan-29.json
 ```
 
 ### Python Code
@@ -164,23 +164,23 @@ python Decode_SampleDataset_Jan-29.py --json raw.json --meta meta_1769656943.jso
 ```python
 from Decode_SampleDataset_Jan-29 import decode_sensor_file
 
-df, meta = decode_sensor_file('meta_1769656943.json')
+df, meta = decode_sensor_file('meta_Data_Jan-29.json')
 print(f"Loaded {len(df)} samples")
 ```
 
 **Silent mode:**
 ```python
-df, meta = decode_sensor_file('meta_1769656943.json', verbose=False)
+df, meta = decode_sensor_file('meta_Data_Jan-29.json', verbose=False)
 ```
 
 **With CSV:**
 ```python
-df, meta = decode_sensor_file('meta_1769656943.json', output_csv='data.csv')
+df, meta = decode_sensor_file('meta_Data_Jan-29.json', output_csv='data.csv')
 ```
 
 **From JSON:**
 ```python
-df, meta = decode_sensor_file('meta_1769656943.json', json_filepath='raw.json')
+df, meta = decode_sensor_file('meta_Data_Jan-29.json', json_filepath='raw.json')
 ```
 
 ---
@@ -192,7 +192,7 @@ df, meta = decode_sensor_file('meta_1769656943.json', json_filepath='raw.json')
 import numpy as np
 from Decode_SampleDataset_Jan-29 import decode_sensor_file
 
-df, meta = decode_sensor_file('meta_1769656943.json', verbose=False)
+df, meta = decode_sensor_file('meta_Data_Jan-29.json', verbose=False)
 
 # Total acceleration magnitude
 magnitude = np.sqrt(df['X']**2 + df['Y']**2 + df['Z']**2)
@@ -205,7 +205,7 @@ print(f"Max: {magnitude.max():.3f} units")
 ```python
 from Decode_SampleDataset_Jan-29 import decode_sensor_file
 
-df, meta = decode_sensor_file('meta_1769656943.json', verbose=False)
+df, meta = decode_sensor_file('meta_Data_Jan-29.json', verbose=False)
 
 # Get data from 2 to 5 seconds
 window = df.loc[2.0:5.0]
@@ -219,7 +219,7 @@ print(f"Mean X: {window['X'].mean():.3f} units")
 import matplotlib.pyplot as plt
 from Decode_SampleDataset_Jan-29 import decode_sensor_file
 
-df, meta = decode_sensor_file('meta_1769656943.json', verbose=False)
+df, meta = decode_sensor_file('meta_Data_Jan-29.json', verbose=False)
 
 plt.figure(figsize=(12, 6))
 plt.plot(df.index, df['X'], label='X')
@@ -237,7 +237,7 @@ plt.show()
 ## Troubleshooting
 
 ### Error: File not found
-**Problem:** `FileNotFoundError: meta_1769656943.json not found`
+**Problem:** `FileNotFoundError: meta_Data_Jan-29.json not found`
 
 **Solution:**
 - Check file exists in current directory
@@ -245,7 +245,7 @@ plt.show()
 - Use full path if needed
 
 ### Error: Binary file not found
-**Problem:** `FileNotFoundError: Binary file not found: 1769656943`
+**Problem:** `FileNotFoundError: Binary file not found: Data_Jan-29`
 
 **Solution:**
 - Both files must be in same directory
