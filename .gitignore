@@ -188,3 +188,8 @@ Decode_Dataset/DecodedData/
 
 # Claude settings
 .claude/settings.local.json
+
+# Review and audit artifacts (temporary)
+*_REVIEW.md
+*_AUDIT.md
+*_SUMMARY.md

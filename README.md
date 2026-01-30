@@ -1,292 +1,203 @@
-# Parkinson's Detection Pipeline - Random Forest Specialized
+# acare-ml
 
-## 1. Project Overview
-This project specializes in detecting the **"OFF" state** in Parkinson's patients using wearable IMU (Inertial Measurement Unit) sensor data. By analyzing accelerometer and gyroscope signals, the pipeline identifies motor states (ON vs OFF medication) with high precision using machine learning.
+Production-ready ML pipeline for Parkinson's disease detection from IMU sensor data.
 
-## 2. Project Structure
+## Directory Structure
+
 ```
-Test_Algorithms_App/
-├── RandomForest.py              # ML pipeline for decoded_csv data (recommended)
-├── RandomForest_Test_Train.py   # ML pipeline for Data/ folder (legacy)
-├── Decode_Dataset.py            # Decodes raw binary IMU data to CSV
-├── labels_template.csv          # Template for user labels
-├── requirements.txt             # Python dependencies
-├── README.md                    # This file
-├── Data/                        # Processed CSV data for ML training
-├── rw_backup/                   # Raw binary IMU data (place here before decoding)
-├── decoded_csv/                 # Output folder for decoded CSV files
-├── outputs/                     # ML pipeline results and visualizations
-└── venv/                        # Python virtual environment
+acare-ml/
+├── configs/              # Pipeline configuration files
+│   ├── dataset.yaml      # Data ingestion settings
+│   ├── features.yaml     # Feature extraction config
+│   ├── training.yaml     # Model training hyperparameters
+│   └── inference.yaml    # Inference settings
+├── data/
+│   ├── raw/              # Original immutable data files
+│   ├── interim/          # Intermediate cleaned data
+│   └── processed/        # Final feature matrices
+├── artifacts/
+│   ├── models/           # Trained model files (.pkl, .joblib)
+│   ├── reports/          # Performance metrics and eval reports
+│   └── figures/          # Plots and visualizations
+├── notebooks/            # Jupyter notebooks for exploration
+├── scripts/              # One-off utility scripts
+├── src/acare_ml/         # Main package source
+│   ├── common/           # Logging, config utilities
+│   ├── domain/           # Business logic, constants, clinical thresholds
+│   ├── dataio/           # Data readers
+│   ├── preprocessing/    # Signal processing transforms
+│   ├── features/         # Feature extractors
+│   ├── models/           # Model definitions
+│   ├── training/         # Training logic
+│   ├── evaluation/       # Metrics, cross-validation, reports
+│   ├── validation/       # Data validation, quality checks
+│   ├── subjects/         # Subject-level operations and splitting
+│   ├── pipelines/        # End-to-end workflows
+│   └── serving/          # Model serving/API
+├── tests/                # Unit and integration tests
+├── docs/                 # Documentation
+│   └── PROJECT_STRUCTURE.md  # Detailed structure guide
+├── pyproject.toml        # Package metadata and dependencies
+├── Makefile              # Development commands
+├── pytest.ini            # Pytest configuration
+└── .env.example          # Environment variables template
 ```
 
-## 3. Environment Setup
-To set up the project locally, follow these steps:
+## Quick Start
 
-1. **Clone the repository**:
-   ```bash
-   git clone <repository-url>
-   cd Test_Algorithms_App
-   ```
+### Installation
 
-2. **Create a Virtual Environment**:
-   ```bash
-   python -m venv venv
-   ```
-
-3. **Activate the Virtual Environment**:
-   - **Windows**: `.\venv\Scripts\activate`
-   - **macOS/Linux**: `source venv/bin/activate`
-
-4. **Install Dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-## 4. Technology Stack & Libraries
-The project is built using the Python scientific stack:
-- **NumPy & Pandas**: Data manipulation and numerical operations.
-- **SciPy**: Signal processing (Butterworth filters) and statistical analysis (Skewness, Kurtosis).
-- **Scikit-Learn**: Machine learning pipeline, Random Forest implementation, and evaluation metrics.
-- **Matplotlib**: Generation of performance visualizations (Confusion Matrix, ROC Curve).
-
-## 5. Software Architecture & Design Patterns
-The codebase is designed for modularity and extensibility using modern software engineering patterns:
-
-### Design Patterns
-- **Strategy Pattern**: used in `BaseExtractor`, `StatExtractor`, and `GaitExtractor`. This allows the pipeline to swap or add new feature extraction logic without modifying the core `Pipeline` execution logic.
-- **Composition**: The `Pipeline` class coordinates specialized objects (`Preprocessor`, `WindowSegmenter`, `BaseExtractor` list) rather than using complex inheritance.
-- **Config Pattern**: Uses Python `dataclasses` (`PipelineConfig`, `FilterConfig`) to centralize parameters, making the code clean and easy to tune.
-
-### SOLID Principles
-- **Single Responsibility Principle (SRP)**: Each class has one job. `ButterworthFilter` only filters, `Preprocessor` manages signal flow, and `WindowSegmenter` only slices data.
-- **Open/Closed Principle (OCP)**: New metrics or sensors can be added by creating new subclasses of `BaseExtractor` without changing existing code.
-- **Liskov Substitution Principle (LSP)**: All extractor subclasses implement the `extract` method, ensuring they can be used interchangeably by the pipeline.
-- **Dependency Inversion**: The `Pipeline` depends on abstractions (like the list of extractors) rather than concrete implementations.
-
-## 6. Technical Flow
-1. **Signal Conditioning**: Raw IMU data is processed via a 4th-order Butterworth low-pass filter (15Hz cutoff) to remove high-frequency noise and isolate human motion.
-2. **Windowing**: Data is segmented into fixed-size windows (e.g., 320 samples) for localized analysis.
-3. **Feature Extraction**: 
-   - **Time-Domain**: Mean, Std, RMS, IQR, etc. (36 features total).
-   - **Gait-Specific**: Step detection via peak finding on the Y-axis, cadence calculation, and arm swing magnitude.
-4. **Classification**: A **Random Forest Classifier** (100 estimators) is trained on the extracted features. Random Forest was chosen for its ability to handle non-linear relationships in physical movement data and its resistance to overfitting.
-
-## 7. Usage Guide
-Run the pipeline with automated labeling:
 ```bash
-python RandomForest_Test_Train.py --fast
-```
-### CLI Arguments:
-- `--fs`: Set sampling frequency (default 32Hz).
-- `--data`: Path to the Data folder.
-- `--task`: Task name to process (e.g., `walk_hold_left`).
-- `--fast`: Fast mode (disables plots).
+# Clone and navigate
+git clone <repo-url>
+cd acare-ml
 
-## 8. Data & Labeling
-- **Structure**: Expects a `Data/` folder with subdirectories per case. Each case must have matching `acc` and `gyro` CSV files.
-- **Auto-Labeling**: Labels are automatically inferred from folder suffixes (e.g., `mnsy`).
-    - 2nd character **'n'**: Medication OFF (Class 1).
-    - 2nd character **'y'**: Medication ON (Class 0).
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
 
-## 9. Raw Data Decoding (rw_backup)
-The `rw_backup/` folder contains raw binary IMU data files collected from wearable devices.
-
-### Prerequisites
-> **IMPORTANT:** You must place the `rw_backup/` folder in the **same directory** as `Decode_Dataset.py` before running the script.
-
-**Required folder structure:**
-```
-Test_Algorithms_App/
-├── Decode_Dataset.py
-├── RandomForest_Test_Train.py
-├── rw_backup/                  <-- Place here
-│   ├── <user_id_1>/
-│   │   ├── 2025_06_09_14_08_17
-│   │   ├── 2025_06_09_14_08_27
-│   │   └── ...
-│   └── <user_id_2>/
-│       └── ...
-├── Data/
-├── outputs/
-└── ...
+# Install in editable mode with dev dependencies
+pip install -e ".[dev]"
 ```
 
-### Decode_Dataset.py
-This script processes binary IMU data files from the `rw_backup/` directory, decodes them into physical units, and saves the results as CSV files.
+### Verify Installation
 
-**Binary Format**:
-- Data stored as **float32** (4 bytes per value)
-- **6 values per sample**: Ax, Ay, Az, Gx, Gy, Gz
-- Accelerometer conversion: `raw * 9.807 / 4096` (m/s²)
-- Gyroscope conversion: `raw * π / (32 * 180)` (rad/s)
-- Sampling rate: **32 Hz**
-
-**Run the decoder:**
 ```bash
-python Decode_Dataset.py
+# Check CLI is accessible
+acare-ml --help
+
+# Or via module
+python -m acare_ml.cli --help
 ```
 
-**Output Structure:**
-```
-decoded_csv/
-├── <user_id_1>/
-│   ├── 2025_06_09_14_08_17.csv
-│   ├── 2025_06_09_14_08_27.csv
-│   └── ...
-├── <user_id_2>/
-│   └── ...
-└── ...
-```
+### Run Pipeline
 
-**CSV Format:**
-| Sample | Ax     | Ay     | Az     | Gx     | Gy      | Gz     |
-|--------|--------|--------|--------|--------|---------|--------|
-| 0      | 0.6704 | 1.5395 | 9.6993 | 0.0180 | -0.0660 | 0.0016 |
-| 1      | ...    | ...    | ...    | ...    | ...     | ...    |
-
-- **Ax, Ay, Az**: Accelerometer values in m/s²
-- **Gx, Gy, Gz**: Gyroscope values in rad/s
-
-### Usage Examples
-
-**1. Decode all rw_backup files to CSV:**
 ```bash
-python Decode_Dataset.py
+# 1. Build dataset from raw data
+acare-ml build-dataset \
+  --config configs/dataset.yaml \
+  --output-dir data/interim
+
+# 2. Extract features
+acare-ml build-features \
+  --config configs/features.yaml \
+  --input-dir data/interim \
+  --output-dir data/processed
+
+# 3. Train model
+acare-ml train \
+  --config configs/training.yaml \
+  --data-dir data/processed \
+  --output-dir artifacts/models
+
+# 4. Run inference
+acare-ml infer \
+  --model-path artifacts/models/model.pkl \
+  --data-path data/processed/test_features.csv \
+  --output-path artifacts/predictions.csv
 ```
 
-**2. Load decoded CSV for analysis:**
-```python
-import pandas as pd
+## Configuration Files
 
-# Load a decoded file
-df = pd.read_csv("decoded_csv/oA9zb5Jvsia7Tl9fTnqhYzLhkXUo/2025_06_09_14_08_17.csv")
+| Config | Purpose |
+|--------|---------|
+| `dataset.yaml` | Raw data paths, file patterns, subject/label columns |
+| `features.yaml` | Window size, overlap, sampling rate, feature extractors |
+| `training.yaml` | Model type, hyperparameters, train/test split, random seed |
+| `inference.yaml` | Model path, input data, output path, batch size |
 
-# Access accelerometer data
-ax = df['Ax'].values  # m/s²
-ay = df['Ay'].values
-az = df['Az'].values
+See [docs/PROJECT_STRUCTURE.md](docs/PROJECT_STRUCTURE.md) for detailed configuration guides.
 
-# Access gyroscope data
-gx = df['Gx'].values  # rad/s
-gy = df['Gy'].values
-gz = df['Gz'].values
-```
+## Artifacts
 
-**3. Use decoded data with the ML pipeline:**
-```python
-import pandas as pd
+All outputs are saved in the `artifacts/` directory:
 
-# Load decoded data
-df = pd.read_csv("decoded_csv/user_id/timestamp.csv")
+- **models/**: Serialized model files (`.pkl`, `.joblib`, `.onnx`)
+- **reports/**: JSON metrics, classification reports, evaluation results
+- **figures/**: Feature importance plots, confusion matrices, ROC curves
 
-# Prepare for pipeline (rename columns to match expected format)
-acc_df = pd.DataFrame({'X': df['Ax'], 'Y': df['Ay'], 'Z': df['Az']})
-gyro_df = pd.DataFrame({'X': df['Gx'], 'Y': df['Gy'], 'Z': df['Gz']})
+These artifacts are gitignored by default. Use a model registry or DVC for version control.
 
-# Now you can use these with the Preprocessor and feature extractors
-```
+## Development
 
-**4. Use the decode function in your own code:**
-```python
-from Decode_Dataset import decode_and_convert
+### Testing
 
-file_path = "rw_backup/oA9zb5Jvsia7Tl9fTnqhYzLhkXUo/2025_06_09_14_08_17"
-data = decode_and_convert(file_path)
-if data is not None:
-    print(f"Decoded {len(data['Ax'])} samples")
-    print(f"Ax range: {data['Ax'].min():.3f} to {data['Ax'].max():.3f} m/s²")
-```
-
-## 10. Training with Decoded Data (RandomForest.py)
-This is the recommended pipeline for training on decoded IMU data from `decoded_csv/`.
-
-### Prerequisites
-1. Decode raw data first: `python Decode_Dataset.py`
-2. Create a labels file mapping user IDs to classes
-
-### Labels File Format
-Create a CSV file (e.g., `labels.csv`) with user labels:
-```csv
-user_id,label
-oA9zb5Jvsia7Tl9fTnqhYzLhkXUo,1
-akwn2joina1,0
-oA9zb5Au-No3klQwjuY28POhL7U0,1
-```
-- `user_id`: Folder name in `decoded_csv/`
-- `label`: 0 = ON medication, 1 = OFF medication
-
-A template is provided: `labels_template.csv`
-
-### Run the Pipeline
 ```bash
-python RandomForest.py --labels labels.csv
+# Run all tests
+make test
+
+# Or directly with pytest
+pytest
+
+# With coverage report
+pytest --cov=acare_ml --cov-report=html
 ```
 
-### CLI Arguments
-| Argument | Default | Description |
-|----------|---------|-------------|
-| `--data` | `decoded_csv` | Path to decoded CSV directory |
-| `--output` | `outputs` | Path to output directory |
-| `--labels` | (required) | Path to labels CSV file |
-| `--fs` | `32` | Sampling frequency in Hz |
-| `--window` | `320` | Window size in samples |
-| `--features` | `15` | Number of top features to select |
-| `--fast` | `false` | Skip plot generation |
+### Code Quality
 
-### Examples
 ```bash
-# Basic usage
-python RandomForest.py --labels labels.csv
+# Format code
+make format
 
-# Custom settings
-python RandomForest.py --data decoded_csv --labels labels.csv --window 256 --features 20
+# Lint
+make lint
 
-# Fast mode (no plots)
-python RandomForest.py --labels labels.csv --fast
+# Or use tools directly
+black src/ tests/
+ruff check src/ tests/
+mypy src/
 ```
 
-### Architecture & Design Patterns
-The `RandomForest.py` pipeline implements:
+### Makefile Targets
 
-**Design Patterns:**
-- **Strategy Pattern**: `FeatureExtractor` abstract class with `StatisticalExtractor`, `GaitExtractor`, `FrequencyExtractor`
-- **Composition**: `Pipeline` coordinates `Preprocessor`, `WindowSegmenter`, `FeatureExtractorCoordinator`, `ModelManager`
-- **Config Pattern**: Dataclasses (`PipelineConfig`, `FilterConfig`, `WindowConfig`, `ModelConfig`)
+```bash
+make help      # Show available targets
+make install   # Install package with dev dependencies
+make test      # Run tests
+make lint      # Run linter
+make format    # Format code
+make clean     # Remove build artifacts
+```
 
-**SOLID Principles:**
-- **SRP**: Each class has one responsibility (e.g., `DataLoader` only loads data)
-- **OCP**: Add new extractors without modifying existing code
-- **LSP**: All extractors implement `FeatureExtractor` interface
-- **DIP**: `Pipeline` depends on abstractions, not concrete implementations
+## Documentation
 
-**Features Extracted:**
-| Category | Features |
-|----------|----------|
-| Statistical | mean, std, min, max, range, rms, skew, kurtosis, iqr, median |
-| Gait | steps, step_time, cadence, step_regularity, arm_swing |
-| Frequency | dominant_freq, spectral_energy, spectral_centroid |
+- **[PROJECT_STRUCTURE.md](docs/PROJECT_STRUCTURE.md)**: Detailed guide on folder purposes, module breakdown, workflow, and best practices
+- **Inline code comments**: Implementation details in source files
+- **Notebooks**: Exploratory analysis examples in `notebooks/`
 
-## 11. Outputs & File Explanations
-Results are saved in the `outputs/` folder. Each file serves a specific role in the analysis:
+## Key Concepts
 
-- **`extracted_features.csv`**: 
-  - *What it is*: A massive table containing all calculated metrics (Mean, RMS, Cadence, etc.) for every data window processed.
-  - *Why we need it*: It serves as the "Gold Standard" dataset. It allows you to inspect the raw numbers before they enter the AI model and can be reused for training other models (like SVM or Neural Networks) without re-running the extraction.
+### Data Flow
 
-- **`evaluation_report.txt`**: 
-  - *What it is*: A text summary showing the **Precision, Recall, F1-Score**, and **Cross-Validation Accuracy**.
-  - *Why we need it*: This is your primary "Health Check." It tells you exactly how reliable the AI is. The *Cross-Validation* score specifically ensures that the model's performance is consistent and not just a result of a lucky guess.
+```
+raw → interim → processed → artifacts
+```
 
-- **`feature_importance.png`**: 
-  - *What it is*: A bar chart ranking which sensor metrics (e.g., `Y_rms` or `cadence`) had the most influence on the "OFF" state detection.
-  - *Why we need it*: It provides **Explainability**. In medical apps, you need to know *why* a model made a decision. If `arm_swing` is high on the list, it proves the model is looking at the correct physical symptoms.
+1. **raw**: Original sensor data (immutable)
+2. **interim**: Cleaned, validated data
+3. **processed**: Feature matrices ready for ML
+4. **artifacts**: Models, metrics, predictions
 
-- **`confusion_matrix.png`**: 
-  - *What it is*: A grid showing exactly how many "ON" states were correctly identified and how many were mistaken for "OFF" (and vice-versa).
-  - *Why we need it*: Accuracy doesn't tell the whole story. This plot helps you see if the model is biased (e.g., if it's very good at finding "OFF" but constantly misses "ON" states).
+### Avoiding Data Leakage
 
-- **`roc_curve.png`**: 
-  - *What it is*: A "Receiver Operating Characteristic" curve that plots the True Positive Rate against the False Positive Rate.
-  - *Why we need it*: It measures the model's ability to distinguish between classes at various thresholds. A curve that bows toward the top-left corner indicates a high-performing, stable classifier.
+- Use **subject-level splits** (not random row splits)
+- Compute normalization/scaling on **training data only**
+- Never use test data for feature engineering decisions
+- See [Common Pitfalls](docs/PROJECT_STRUCTURE.md#common-pitfalls) for details
 
+## Requirements
 
+- Python 3.11+
+- Dependencies: numpy, pandas, scikit-learn, click, pyyaml
+- Dev tools: pytest, black, ruff, mypy
+
+## License
+
+MIT
+
+## Contributing
+
+1. Follow existing code structure
+2. Add tests for new features
+3. Run `make format` and `make lint` before committing
+4. Update documentation as needed

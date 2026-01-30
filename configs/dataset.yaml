@@ -1,0 +1,5 @@
+data_dir: data/raw
+output_dir: data/interim
+file_pattern: "*.csv"
+subject_id_column: subject_id
+label_column: label

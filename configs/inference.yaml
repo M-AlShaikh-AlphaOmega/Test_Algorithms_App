@@ -1,0 +1,4 @@
+model_path: artifacts/models/model.pkl
+input_path: data/processed/test_features.csv
+output_path: artifacts/predictions.csv
+batch_size: 32

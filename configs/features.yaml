@@ -1,0 +1,8 @@
+input_dir: data/interim
+output_dir: data/processed
+window_size_sec: 10
+overlap_ratio: 0.5
+sampling_rate: 100
+feature_extractors:
+  - statistical
+  - frequency
