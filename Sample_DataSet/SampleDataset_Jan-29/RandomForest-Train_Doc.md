@@ -712,7 +712,74 @@ TPR (Recall)
 
 ---
 
-### 8. Classification Threshold
+### 8. Classification Report
+
+**What is it?**
+A comprehensive text summary that shows precision, recall, f1-score, and support for each class in one view.
+
+**Code Usage:**
+```python
+from sklearn.metrics import classification_report
+
+report = classification_report(y_test, y_pred, target_names=['OFF', 'ON'])
+print(report)
+```
+
+**Example Output:**
+```
+              precision    recall  f1-score   support
+
+         OFF       0.89      0.80      0.84       150
+          ON       0.82      0.90      0.86       150
+
+    accuracy                           0.85       300
+   macro avg       0.85      0.85      0.85       300
+weighted avg       0.85      0.85      0.85       300
+```
+
+**Understanding Each Column:**
+
+| Column | Meaning |
+|--------|---------|
+| **precision** | Of predictions for this class, how many were correct? |
+| **recall** | Of actual instances of this class, how many were found? |
+| **f1-score** | Harmonic mean of precision and recall |
+| **support** | Number of actual samples in this class |
+
+**Understanding Each Row:**
+
+| Row | Meaning |
+|-----|---------|
+| **OFF / ON** | Metrics for each individual class |
+| **accuracy** | Overall accuracy across all classes |
+| **macro avg** | Simple average of class metrics (treats all classes equally) |
+| **weighted avg** | Weighted average by support (accounts for class imbalance) |
+
+**Macro vs Weighted Average:**
+
+```
+Example with imbalanced data:
+OFF: 100 samples, F1 = 0.90
+ON:  900 samples, F1 = 0.80
+
+Macro avg    = (0.90 + 0.80) / 2 = 0.85  (equal weight)
+Weighted avg = (100×0.90 + 900×0.80) / 1000 = 0.81  (by sample count)
+```
+
+**Parkinson's Context:**
+- Check **recall for OFF class** specifically - missing OFF states is dangerous
+- If classes are imbalanced, use **weighted avg** as the overall metric
+- Compare precision and recall to see where the model struggles
+
+**Why Use Classification Report?**
+1. **All-in-one view:** See all important metrics at once
+2. **Per-class breakdown:** Understand performance for each state separately
+3. **Quick comparison:** Easy to compare different models
+4. **Identify weaknesses:** Spot which class the model struggles with
+
+---
+
+### 9. Classification Threshold (Decision Boundary)
 
 **What is it?**
 The probability cutoff for making predictions.
@@ -745,7 +812,7 @@ else:
 
 ---
 
-### 9. Cross-Validation
+### 10. Cross-Validation
 
 **What is it?**
 A technique to test how well your model generalizes to new data.
@@ -785,7 +852,7 @@ Accuracy: 0.88 ± 0.03
 
 ---
 
-### 10. Feature Importance
+### 11. Feature Importance
 
 **What is it?**
 How much each feature (input variable) contributes to predictions.
@@ -816,7 +883,7 @@ How much each feature (input variable) contributes to predictions.
 
 ---
 
-### 11. StandardScaler (Feature Normalization)
+### 12. StandardScaler (Feature Normalization)
 
 **What is it?**
 Transforms features to have mean=0 and standard deviation=1.
@@ -862,7 +929,7 @@ scaler.fit(X_test)  # Never do this
 
 ---
 
-### 12. Random Forest Algorithm
+### 13. Random Forest Algorithm
 
 **What is it?**
 An ensemble of many decision trees that vote on the final prediction.
@@ -923,7 +990,7 @@ An ensemble of many decision trees that vote on the final prediction.
 
 ---
 
-### 13. Gini Impurity
+### 14. Gini Impurity
 
 **What is it?**
 A measure of how "mixed" or "impure" a node is. Used to decide splits in decision trees.
@@ -956,7 +1023,7 @@ Gini = 1 - (0.8² + 0.2²) = 1 - 0.68 = 0.32
 
 ---
 
-### 14. Weighted Metrics
+### 15. Weighted Metrics
 
 **What is weighted averaging?**
 When calculating precision, recall, or F1 across classes, weight by class size.

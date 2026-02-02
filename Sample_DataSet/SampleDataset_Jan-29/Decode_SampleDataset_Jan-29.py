@@ -6,7 +6,7 @@ Supports both binary and JSON formats.
 
 Usage:
     python Decode_SampleDataset_Jan-29.py meta_Data_Jan-29.json
-    python Decode_SampleDataset_Jan-29.py meta_Data_Jan-29.json --output results.csv
+    python Decode_SampleDataset_Jan-29.py meta_Data_Jan-29.json --output results_Jan-29.csv
     python Decode_SampleDataset_Jan-29.py --json raw.json --meta meta_Data_Jan-29.json
 """
 
