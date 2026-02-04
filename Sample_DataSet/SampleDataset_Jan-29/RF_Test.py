@@ -24,6 +24,7 @@ import os
 import sys
 import json
 import warnings
+import importlib.util
 import numpy as np
 import pandas as pd
 from pathlib import Path
@@ -590,22 +591,30 @@ class Trainer:
         print("="*60)
         
         X_scaled = self.scaler.fit_transform(X)
-        
+
+        # Adjust parameters for small datasets
+        n_samples = len(y)
+        min_class_count = min(np.sum(y == 0), np.sum(y == 1))
+        adjusted_split = min(10, max(2, n_samples // 3))
+        adjusted_leaf = min(4, max(1, n_samples // 5))
+
         self.model = RandomForestClassifier(
             n_estimators=100,
             max_depth=15,
-            min_samples_split=10,
-            min_samples_leaf=4,
+            min_samples_split=adjusted_split,
+            min_samples_leaf=adjusted_leaf,
             class_weight='balanced',
             random_state=self.config.random_state,
             n_jobs=-1
         )
-        
-        # Cross-validation
-        cv = StratifiedKFold(n_splits=self.config.n_cv_folds, shuffle=True, 
+
+        # Cross-validation (adjust folds if data is too small)
+        n_folds = min(self.config.n_cv_folds, int(min_class_count))
+        n_folds = max(2, n_folds)  # minimum 2-fold
+        cv = StratifiedKFold(n_splits=n_folds, shuffle=True,
                             random_state=self.config.random_state)
         
-        print(f"Performing {self.config.n_cv_folds}-fold cross-validation...")
+        print(f"Performing {n_folds}-fold cross-validation...")
         
         self.cv_results = cross_validate(
             self.model, X_scaled, y,
@@ -634,10 +643,10 @@ class Trainer:
         
         metrics = {
             'accuracy': accuracy_score(y, y_pred),
-            'precision': precision_score(y, y_pred),
-            'recall': recall_score(y, y_pred),
-            'f1': f1_score(y, y_pred),
-            'confusion_matrix': confusion_matrix(y, y_pred),
+            'precision': precision_score(y, y_pred, zero_division=0),
+            'recall': recall_score(y, y_pred, zero_division=0),
+            'f1': f1_score(y, y_pred, zero_division=0),
+            'confusion_matrix': confusion_matrix(y, y_pred, labels=[0, 1]),
             'cv_accuracy_mean': np.mean(self.cv_results['test_accuracy']),
             'cv_accuracy_std': np.std(self.cv_results['test_accuracy']),
             'cv_precision_mean': np.mean(self.cv_results['test_precision']),
@@ -717,7 +726,9 @@ class CompletePipeline:
         try:
             # STEP 1: Load data
             print("\n[STEP 1] Loading data...")
-            if data_mode == 'recordings':
+            if data_mode == 'dataframe':
+                df = data_source
+            elif data_mode == 'recordings':
                 df = self.loader.load_recordings(data_source)
             else:
                 df = self.loader.load_contract_session(data_source)
@@ -910,33 +921,71 @@ def main():
     
     # Configuration
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    recordings_dir = os.path.join(script_dir, 'recordings')
+    meta_path = os.path.join(script_dir, 'meta_Data_Jan-29.json')
+    data_path = os.path.join(script_dir, 'Data_Jan-29')
     output_dir = os.path.join(script_dir, 'results')
     models_dir = os.path.join(script_dir, 'models')
-    
-    # Check recordings folder
-    if not os.path.exists(recordings_dir):
-        print(f"\n❌ ERROR: Recordings folder not found: {recordings_dir}")
-        print("\nExpected structure:")
-        print("  your_project/")
-        print("    ├── recordings/")
-        print("    │   ├── sample_001_ON.csv")
-        print("    │   ├── sample_002_OFF.csv")
-        print("    │   └── ...")
-        print("    └── parkinsons_complete_all_in_one.py")
-        print("\nCSV format: time,X,Y,Z")
-        print("Filename must contain '_ON' or '_OFF'")
+
+    # Check required files
+    if not os.path.exists(meta_path):
+        print(f"\n❌ ERROR: Meta file not found: {meta_path}")
         return None
-    
-    csv_files = [f for f in os.listdir(recordings_dir) if f.endswith('.csv')]
-    if len(csv_files) == 0:
-        print(f"\n❌ ERROR: No CSV files in {recordings_dir}")
+    if not os.path.exists(data_path):
+        print(f"\n❌ ERROR: Binary data file not found: {data_path}")
         return None
-    
-    print(f"Working directory: {script_dir}")
-    print(f"Recordings folder: {recordings_dir}")
-    print(f"Found {len(csv_files)} CSV files\n")
-    
+
+    # ── STEP A: Decode Data_Jan-29 binary ──
+    print("[DECODE] Decoding Data_Jan-29 binary...")
+    decoder_path = os.path.join(script_dir, 'Decode_SampleDataset_Jan-29.py')
+    spec = importlib.util.spec_from_file_location("decoder", decoder_path)
+    decoder = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(decoder)
+
+    df, meta = decoder.decode_sensor_file(meta_path)
+    df = df.reset_index()  # time from index → column
+    freq = float(meta['freq'])
+    print(f"  Decoded: {len(df)} samples, {freq} Hz, {df['time'].max():.2f}s\n")
+
+    # ── STEP B: Classify windows as ON/OFF based on tremor signal ──
+    # Tremor-band power (4-6 Hz) distinguishes motor states:
+    #   High tremor power → OFF (medication worn off, more tremor)
+    #   Low tremor power  → ON  (medication effective, smoother motion)
+    print("[CLASSIFY] Classifying signal into ON/OFF states...")
+    window_size = int(freq * 1.0)  # 1-second windows
+    step = window_size // 2         # 50% overlap
+
+    tremor_powers = []
+    window_centers = []
+    for start in range(0, len(df) - window_size + 1, step):
+        window = df.iloc[start:start + window_size]
+        mag = np.sqrt(window['X']**2 + window['Y']**2 + window['Z']**2)
+        # FFT to get tremor-band (4-6 Hz) power
+        fft_vals = np.abs(np.fft.rfft(mag.values))**2
+        fft_freqs = np.fft.rfftfreq(len(mag), 1/freq)
+        tremor_mask = (fft_freqs >= 4.0) & (fft_freqs <= 6.0)
+        total_power = np.sum(fft_vals)
+        tremor_power = np.sum(fft_vals[tremor_mask]) / total_power if total_power > 0 else 0
+        tremor_powers.append(tremor_power)
+        window_centers.append(start + window_size // 2)
+
+    # Threshold: above median tremor power → OFF, below → ON
+    threshold = np.median(tremor_powers)
+    labels_per_sample = np.full(len(df), 'ON')
+    for center, tp in zip(window_centers, tremor_powers):
+        w_start = max(0, center - window_size // 2)
+        w_end = min(len(df), center + window_size // 2)
+        if tp > threshold:
+            labels_per_sample[w_start:w_end] = 'OFF'
+
+    df['label'] = labels_per_sample
+    df['source_file'] = 'Data_Jan-29'
+
+    on_count = np.sum(labels_per_sample == 'ON')
+    off_count = np.sum(labels_per_sample == 'OFF')
+    print(f"  Tremor-band threshold: {threshold:.4f}")
+    print(f"  ON samples:  {on_count}")
+    print(f"  OFF samples: {off_count}\n")
+
     # System configuration (25 Hz for real sensor)
     config = SystemConfig(
         sampling_rate=25,
@@ -946,13 +995,13 @@ def main():
         n_cv_folds=5,
         random_state=42
     )
-    
+
     # Run pipeline
     pipeline = CompletePipeline(config)
-    
+
     results = pipeline.run(
-        data_source=recordings_dir,
-        data_mode='recordings',
+        data_source=df,
+        data_mode='dataframe',
         patient_id="PATIENT_001"
     )
     

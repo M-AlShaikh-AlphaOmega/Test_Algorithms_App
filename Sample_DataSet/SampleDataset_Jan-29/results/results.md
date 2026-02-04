@@ -2,49 +2,49 @@
 
 ## Patient Information
 - **Patient ID:** PATIENT_001
-- **Analysis Date:** 2026-02-04T14:28:26.779788
+- **Analysis Date:** 2026-02-04T22:28:42.649966
 
 ## Dataset Summary
-- **Total Samples:** 1,092
-- **Total Windows:** 83
-- **Features:** 104
-- **ON Windows:** 41 (49.4%)
-- **OFF Windows:** 42 (50.6%)
+- **Total Samples:** 273
+- **Total Windows:** 20
+- **Features:** 103
+- **ON Windows:** 20 (100.0%)
+- **OFF Windows:** 0 (0.0%)
 
 ## Model Performance
 
 ### Cross-Validation
-- **Accuracy:** 0.1684 ± 0.0681
-- **Precision:** 0.1409
-- **Recall:** 0.1750
-- **F1-Score:** 0.1553
+- **Accuracy:** 1.0000 ± 0.0000
+- **Precision:** 1.0000
+- **Recall:** 1.0000
+- **F1-Score:** 1.0000
 
 ### Final Model
-- **Accuracy:** 0.7711
-- **Precision:** 0.7500
-- **Recall:** 0.8049
-- **F1-Score:** 0.7765
+- **Accuracy:** 1.0000
+- **Precision:** 1.0000
+- **Recall:** 1.0000
+- **F1-Score:** 1.0000
 
 ### Confusion Matrix
 ```
               Predicted
               OFF   ON
-  Actual OFF    31    11
-         ON      8    33
+  Actual OFF     0     0
+         ON      0    20
 ```
 
 ## Top 10 Features
 
-1. **magnitude_std_zscore** - 0.0257
-2. **X_kurtosis_zscore** - 0.0230
-3. **X_mean_zscore** - 0.0219
-4. **Z_skewness_zscore** - 0.0204
-5. **corr_yz** - 0.0202
-6. **X_iqr** - 0.0201
-7. **Y_voluntary_power** - 0.0201
-8. **X_tremor_power** - 0.0189
-9. **Y_std** - 0.0189
-10. **X_kurtosis** - 0.0187
+1. **X_mean** - 0.0000
+2. **X_std** - 0.0000
+3. **X_var** - 0.0000
+4. **X_rms** - 0.0000
+5. **X_peak_to_peak** - 0.0000
+6. **X_energy** - 0.0000
+7. **X_sma** - 0.0000
+8. **X_skewness** - 0.0000
+9. **X_kurtosis** - 0.0000
+10. **X_iqr** - 0.0000
 
 
 ## Configuration
