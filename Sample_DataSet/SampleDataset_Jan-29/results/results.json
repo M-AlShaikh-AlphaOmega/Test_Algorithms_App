@@ -1,0 +1,398 @@
+{
+  "patient_id": "PATIENT_001",
+  "config": {
+    "sampling_rate": 25,
+    "window_duration": 1.0,
+    "window_overlap": 0.5,
+    "gravity_magnitude": 9.8,
+    "acc_axes": [
+      "X",
+      "Y",
+      "Z"
+    ],
+    "tremor_band_low": 4.0,
+    "tremor_band_high": 6.0,
+    "voluntary_band_high": 3.0,
+    "baseline_min_windows": 5,
+    "random_state": 42,
+    "n_cv_folds": 5,
+    "max_missing_ratio": 0.1,
+    "outlier_std_threshold": 5.0
+  },
+  "dataset_info": {
+    "total_samples": 273,
+    "total_windows": 20,
+    "features_count": 103,
+    "on_count": 20,
+    "off_count": 0
+  },
+  "baseline_stats": {
+    "stats": {
+      "X_mean": {
+        "mean": 0.19624478756494645,
+        "std": 0.2525831369784676,
+        "median": 0.11504363929161052
+      },
+      "X_std": {
+        "mean": 2.1492322174043874,
+        "std": 0.6364861540253095,
+        "median": 2.3189228113809244
+      },
+      "X_var": {
+        "mean": 5.024313748594911,
+        "std": 2.592836897244612,
+        "median": 5.37740300514281
+      },
+      "X_rms": {
+        "mean": 2.186111440679786,
+        "std": 0.5895258902339696,
+        "median": 2.321774761703699
+      },
+      "X_peak_to_peak": {
+        "mean": 7.69835736261741,
+        "std": 2.423694635807434,
+        "median": 8.259586311077868
+      },
+      "X_energy": {
+        "mean": 128.16560015818013,
+        "std": 61.78338698210267,
+        "median": 134.7659511021067
+      },
+      "X_sma": {
+        "mean": 1.729340894950675,
+        "std": 0.49416928988338166,
+        "median": 1.7934360002005365
+      },
+      "X_skewness": {
+        "mean": -0.4301612699186022,
+        "std": 0.8333967293588318,
+        "median": -0.367707176884067
+      },
+      "X_kurtosis": {
+        "mean": -0.15246311399959897,
+        "std": 0.862889505424471,
+        "median": -0.590188514226428
+      },
+      "X_iqr": {
+        "mean": 2.331165198487075,
+        "std": 0.9203010514244782,
+        "median": 1.8696704038422067
+      },
+      "X_zero_crossing": {
+        "mean": 0.12,
+        "std": 0.0565685424949238,
+        "median": 0.16
+      },
+      "X_dominant_freq": {
+        "mean": 1.0,
+        "std": 0.0,
+        "median": 1.0
+      },
+      "X_tremor_power": {
+        "mean": 0.04578282049999882,
+        "std": 0.02329587368395212,
+        "median": 0.048149457822064624
+      },
+      "X_voluntary_power": {
+        "mean": 0.9355573611688217,
+        "std": 0.0377630588769537,
+        "median": 0.9472429030852458
+      },
+      "X_spectral_entropy": {
+        "mean": 0.4430161852086707,
+        "std": 0.053256474654942265,
+        "median": 0.4701232451191537
+      },
+      "Y_mean": {
+        "mean": -0.06271947736400331,
+        "std": 0.09253288929643895,
+        "median": -0.02275313095606072
+      },
+      "Y_std": {
+        "mean": 1.1917114443207855,
+        "std": 0.2593984451295512,
+        "median": 1.2552688011293671
+      },
+      "Y_var": {
+        "mean": 1.4874637198607619,
+        "std": 0.5959441262704964,
+        "median": 1.5756997630887586
+      },
+      "Y_rms": {
+        "mean": 1.1966820339702238,
+        "std": 0.26059911334463726,
+        "median": 1.2696592575151853
+      },
+      "Y_peak_to_peak": {
+        "mean": 4.481473957751094,
+        "std": 0.8179396042533349,
+        "median": 4.748096936087855
+      },
+      "Y_energy": {
+        "mean": 37.498994707578056,
+        "std": 14.949792145846837,
+        "median": 40.300865754850285
+      },
+      "Y_sma": {
+        "mean": 0.992112250328138,
+        "std": 0.2624710780995678,
+        "median": 1.0000994990540788
+      },
+      "Y_skewness": {
+        "mean": -0.04543873803114281,
+        "std": 0.3397046196128858,
+        "median": -0.0349131310699797
+      },
+      "Y_kurtosis": {
+        "mean": -0.7011111834881131,
+        "std": 0.3675480429380753,
+        "median": -0.5761936273690638
+      },
+      "Y_iqr": {
+        "mean": 1.6345827732837677,
+        "std": 0.5840843620116923,
+        "median": 1.5864608001197797
+      },
+      "Y_zero_crossing": {
+        "mean": 0.3333333333333333,
+        "std": 0.049888765156985884,
+        "median": 0.32
+      },
+      "Y_dominant_freq": {
+        "mean": 1.3333333333333333,
+        "std": 0.4714045207910317,
+        "median": 1.0
+      },
+      "Y_tremor_power": {
+        "mean": 0.17550433433378232,
+        "std": 0.16884905922531546,
+        "median": 0.07849143127730406
+      },
+      "Y_voluntary_power": {
+        "mean": 0.6961452253850036,
+        "std": 0.1976044679108289,
+        "median": 0.8326012313503011
+      },
+      "Y_spectral_entropy": {
+        "mean": 0.6206451195540416,
+        "std": 0.1114732635755043,
+        "median": 0.5626595220269799
+      },
+      "Z_mean": {
+        "mean": 0.10503809076992147,
+        "std": 0.33182986312233637,
+        "median": 0.2310883947513262
+      },
+      "Z_std": {
+        "mean": 1.6391894022766775,
+        "std": 0.3247388002817077,
+        "median": 1.6802336981676953
+      },
+      "Z_var": {
+        "mean": 2.792397184944574,
+        "std": 1.0473074566470946,
+        "median": 2.8231852804582895
+      },
+      "Z_rms": {
+        "mean": 1.6761516588587357,
+        "std": 0.32257845560740706,
+        "median": 1.6960504493224942
+      },
+      "Z_peak_to_peak": {
+        "mean": 5.650934169149001,
+        "std": 0.2211191880967411,
+        "median": 5.497809514098712
+      },
+      "Z_energy": {
+        "mean": 72.83853108792381,
+        "std": 26.856416133320437,
+        "median": 71.91467816617585
+      },
+      "Z_sma": {
+        "mean": 1.4400383283091813,
+        "std": 0.35468264780574366,
+        "median": 1.4574419686754063
+      },
+      "Z_skewness": {
+        "mean": 0.26245318960631825,
+        "std": 0.46527366695994987,
+        "median": -0.025180416494237325
+      },
+      "Z_kurtosis": {
+        "mean": -0.5021086147164434,
+        "std": 1.157856048260189,
+        "median": -1.1926832637659392
+      },
+      "Z_iqr": {
+        "mean": 2.5751887958973483,
+        "std": 0.9689251059957382,
+        "median": 3.0459678075260146
+      },
+      "Z_zero_crossing": {
+        "mean": 0.10666666666666667,
+        "std": 0.018856180831641263,
+        "median": 0.12
+      },
+      "Z_dominant_freq": {
+        "mean": 1.3333333333333333,
+        "std": 0.4714045207910317,
+        "median": 1.0
+      },
+      "Z_tremor_power": {
+        "mean": 0.060790666481601724,
+        "std": 0.030287409660338313,
+        "median": 0.0417895764204859
+      },
+      "Z_voluntary_power": {
+        "mean": 0.8951834081062202,
+        "std": 0.03722565400396266,
+        "median": 0.9148045779918293
+      },
+      "Z_spectral_entropy": {
+        "mean": 0.44622749380516186,
+        "std": 0.0882118543849101,
+        "median": 0.46068133606865924
+      },
+      "magnitude_mean": {
+        "mean": 2.8052889883139183,
+        "std": 0.5440135151359302,
+        "median": 2.4407642163974685
+      },
+      "magnitude_std": {
+        "mean": 1.1331092343541898,
+        "std": 0.3009841998555141,
+        "median": 1.2862010299213973
+      },
+      "magnitude_rms": {
+        "mean": 3.040261223351292,
+        "std": 0.5449190141055683,
+        "median": 2.7794514456329233
+      },
+      "corr_xy": {
+        "mean": 0.4231221191000114,
+        "std": 0.06445872259376123,
+        "median": 0.4600416932207324
+      },
+      "corr_xz": {
+        "mean": -0.3286476853529909,
+        "std": 0.2428736880297814,
+        "median": -0.4856510584054253
+      },
+      "corr_yz": {
+        "mean": -0.5362147714542288,
+        "std": 0.2251767737955519,
+        "median": -0.5135912736904048
+      },
+      "svm": {
+        "mean": 2.8052889883139183,
+        "std": 0.5440135151359302,
+        "median": 2.4407642163974685
+      }
+    },
+    "n_windows": 3
+  },
+  "model_performance": {
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "confusion_matrix": [
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        20
+      ]
+    ],
+    "cv_accuracy_mean": 1.0,
+    "cv_accuracy_std": 0.0,
+    "cv_precision_mean": 1.0,
+    "cv_recall_mean": 1.0,
+    "cv_f1_mean": 1.0
+  },
+  "feature_importance": [
+    {
+      "feature": "X_mean",
+      "importance": 0.0
+    },
+    {
+      "feature": "X_std",
+      "importance": 0.0
+    },
+    {
+      "feature": "X_var",
+      "importance": 0.0
+    },
+    {
+      "feature": "X_rms",
+      "importance": 0.0
+    },
+    {
+      "feature": "X_peak_to_peak",
+      "importance": 0.0
+    },
+    {
+      "feature": "X_energy",
+      "importance": 0.0
+    },
+    {
+      "feature": "X_sma",
+      "importance": 0.0
+    },
+    {
+      "feature": "X_skewness",
+      "importance": 0.0
+    },
+    {
+      "feature": "X_kurtosis",
+      "importance": 0.0
+    },
+    {
+      "feature": "X_iqr",
+      "importance": 0.0
+    },
+    {
+      "feature": "X_zero_crossing",
+      "importance": 0.0
+    },
+    {
+      "feature": "X_dominant_freq",
+      "importance": 0.0
+    },
+    {
+      "feature": "X_tremor_power",
+      "importance": 0.0
+    },
+    {
+      "feature": "X_voluntary_power",
+      "importance": 0.0
+    },
+    {
+      "feature": "X_spectral_entropy",
+      "importance": 0.0
+    },
+    {
+      "feature": "Y_mean",
+      "importance": 0.0
+    },
+    {
+      "feature": "Y_std",
+      "importance": 0.0
+    },
+    {
+      "feature": "Y_var",
+      "importance": 0.0
+    },
+    {
+      "feature": "Y_rms",
+      "importance": 0.0
+    },
+    {
+      "feature": "Y_peak_to_peak",
+      "importance": 0.0
+    }
+  ],
+  "timestamp": "2026-02-04T22:28:42.649966"
+}
