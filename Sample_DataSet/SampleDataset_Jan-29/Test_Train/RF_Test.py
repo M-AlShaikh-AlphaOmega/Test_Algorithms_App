@@ -13,7 +13,9 @@ Single file containing EVERYTHING:
 ✓ Model saving
 
 Usage:
-    python parkinsons_complete_all_in_one.py
+    .\venv\Scripts\Activate.ps1
+    cd Sample_DataSet\SampleDataset_Jan-29\Test_Train
+    python RF_Test.py
 
 Author: aCare System
 Version: 3.0 FINAL
@@ -921,8 +923,10 @@ def main():
     
     # Configuration
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    meta_path = os.path.join(script_dir, 'meta_Data_Jan-29.json')
-    data_path = os.path.join(script_dir, 'Data_Jan-29')
+    # meta_path = os.path.join(script_dir, 'meta_Data_Jan29.json')
+    # data_path = os.path.join(script_dir, 'Data_Jan29')
+    meta_path = os.path.join(script_dir, 'meta_Test_Jan29.json')
+    data_path = os.path.join(script_dir, 'Test_Jan29')
     output_dir = os.path.join(script_dir, 'results')
     models_dir = os.path.join(script_dir, 'models')
 
@@ -934,9 +938,9 @@ def main():
         print(f"\n❌ ERROR: Binary data file not found: {data_path}")
         return None
 
-    # ── STEP A: Decode Data_Jan-29 binary ──
-    print("[DECODE] Decoding Data_Jan-29 binary...")
-    decoder_path = os.path.join(script_dir, 'Decode_SampleDataset_Jan-29.py')
+    # ── STEP A: Decode Data_Jan29 binary ──
+    print("[DECODE] Decoding Data_Jan29 binary...")
+    decoder_path = os.path.join(script_dir, 'Decode_SampleDataset_Jan29.py')
     spec = importlib.util.spec_from_file_location("decoder", decoder_path)
     decoder = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(decoder)
@@ -978,7 +982,8 @@ def main():
             labels_per_sample[w_start:w_end] = 'OFF'
 
     df['label'] = labels_per_sample
-    df['source_file'] = 'Data_Jan-29'
+    # df['source_file'] = 'Data_Jan29'
+    df['source_file'] = 'Test_Jan29'
 
     on_count = np.sum(labels_per_sample == 'ON')
     off_count = np.sum(labels_per_sample == 'OFF')
