@@ -185,7 +185,8 @@ Data
 rw_backup
 decoded_csv
 Decode_Dataset/DecodedData/
-
+Decode_Dataset/DecodedData_Test/
+Decode_Dataset/models/
 # Review and audit artifacts (temporary)
 *_REVIEW.md
 *_AUDIT.md
