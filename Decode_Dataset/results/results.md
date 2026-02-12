@@ -1,47 +1,47 @@
 # Parkinson's ON/OFF Detection Results
 
 ## Dataset Summary
-- Total samples: 5927687
+- Total samples: 24732939
 - Duration: 111.53 seconds
-- Windows: 370479
+- Windows: 1545807
 - Features: 206
 
 ## Model Performance
 - Cross-validation folds: 5
-- CV accuracy (train): 0.6692 ± 0.0005
-- Training samples: 296383
-- Test samples (held-out): 74096
-- Held-out test accuracy: 0.6692
-- Precision: 0.5945
-- Recall: 0.6692
-- F1-score: 0.5589
+- CV accuracy (train): 0.6696 ± 0.0003
+- Training samples: 1236645
+- Test samples (held-out): 309162
+- Held-out test accuracy: 0.6697
+- Precision: 0.5830
+- Recall: 0.6697
+- F1-score: 0.5463
 
 ## Confusion Matrix
 ```
-[[48738, 1133], [23380, 845]]
+[[205749, 1931], [100195, 1287]]
 ```
 
 ## Classification Report
 ```
               precision    recall  f1-score   support
 
-         OFF       0.68      0.98      0.80     49871
-          ON       0.43      0.03      0.06     24225
+         OFF       0.67      0.99      0.80    207680
+          ON       0.40      0.01      0.02    101482
 
-    accuracy                           0.67     74096
-   macro avg       0.55      0.51      0.43     74096
-weighted avg       0.59      0.67      0.56     74096
+    accuracy                           0.67    309162
+   macro avg       0.54      0.50      0.41    309162
+weighted avg       0.58      0.67      0.55    309162
 
 ```
 
 ## Top 10 Features
-1. acc_ax_skewness_zscore: 0.0171
-2. acc_ax_skewness: 0.0170
-3. acc_az_skewness: 0.0169
-4. acc_ax_kurtosis_zscore: 0.0169
-5. acc_ax_kurtosis: 0.0168
-6. acc_az_skewness_zscore: 0.0168
-7. acc_ay_kurtosis_zscore: 0.0167
-8. acc_ay_skewness_zscore: 0.0167
-9. acc_ay_skewness: 0.0167
-10. acc_ay_spectral_entropy_zscore: 0.0166
+1. acc_ax_kurtosis: 0.0170
+2. acc_ax_kurtosis_zscore: 0.0170
+3. gyro_gy_kurtosis_zscore: 0.0168
+4. gyro_gy_kurtosis: 0.0167
+5. acc_ax_skewness_zscore: 0.0167
+6. acc_ay_skewness_zscore: 0.0167
+7. acc_az_skewness: 0.0167
+8. acc_ay_skewness: 0.0167
+9. acc_ax_skewness: 0.0167
+10. acc_az_skewness_zscore: 0.0166
