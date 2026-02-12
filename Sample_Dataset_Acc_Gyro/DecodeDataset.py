@@ -86,19 +86,20 @@ def main() -> None:
     3. Save as CSV files in Decode_Dataset/DecodedData/ with same folder structure
     4. Print summary statistics
     """
-    # Determine if running from project root or Decode_Dataset folder
+    # Determine paths based on current working directory
     current_dir = Path.cwd()
+    script_dir = Path(__file__).resolve().parent
 
-    # Check if running from Decode_Dataset folder
-    if current_dir.name == 'Decode_Dataset':
-        # Running from inside Decode_Dataset folder
+    # Check if running from the Sample_Dataset_Acc_Gyro folder
+    if current_dir.name == 'Sample_Dataset_Acc_Gyro':
         project_root = current_dir.parent
         input_dir = project_root / 'data' / 'raw' / 'EncryptedData'
         output_dir = current_dir / 'DecodedData'
     else:
-        # Running from project root
-        input_dir = Path('data/raw/EncryptedData')
-        output_dir = Path('Decode_Dataset/DecodedData')
+        # Running from project root (or elsewhere) — use script location
+        project_root = script_dir.parent
+        input_dir = project_root / 'data' / 'raw' / 'EncryptedData'
+        output_dir = script_dir / 'DecodedData'
     
     output_dir.mkdir(parents=True, exist_ok=True)
     

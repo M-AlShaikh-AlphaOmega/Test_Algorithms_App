@@ -56,9 +56,9 @@ class FilterConfig:
 @dataclass
 class PipelineConfig:
     """Global configuration for the pipeline execution."""
-    on_data_dir: Path = Path("Decode_Dataset/DecodeDataset_Train_Test/ON")
-    off_data_dir: Path = Path("Decode_Dataset/DecodeDataset_Train_Test/OFF")
-    out_dir: Path = Path("Decode_Dataset/DecodeDataset_Train_Test/outputs")
+    on_data_dir: Path = Path("Sample_Dataset_Acc_Gyro/DecodeDataset_Train_Test/ON")
+    off_data_dir: Path = Path("Sample_Dataset_Acc_Gyro/DecodeDataset_Train_Test/OFF")
+    out_dir: Path = Path("Sample_Dataset_Acc_Gyro/DecodeDataset_Train_Test/outputs")
     fs: int = 32  # Sampling frequency (Hz) - matches decoded data
     fast_mode: bool = False
     test_size: float = 0.3  # 30% for testing, 70% for training
@@ -507,18 +507,18 @@ def main():
         description="Train Random Forest classifier for Parkinson's OFF state detection"
     )
     parser.add_argument(
-        "--data_on", 
-        default="Decode_Dataset/DecodeDataset_Train_Test/ON",
+        "--data_on",
+        default="Sample_Dataset_Acc_Gyro/DecodeDataset_Train_Test/ON",
         help="Path to ON state data directory"
     )
     parser.add_argument(
-        "--data_off", 
-        default="data/Decode_Dataset/DecodeDataset_Train_Test/OFF",
+        "--data_off",
+        default="Sample_Dataset_Acc_Gyro/DecodeDataset_Train_Test/OFF",
         help="Path to OFF state data directory"
     )
     parser.add_argument(
-        "--out", 
-        default="Decode_Dataset/DecodeDataset_Train_Test/outputs",
+        "--out",
+        default="Sample_Dataset_Acc_Gyro/DecodeDataset_Train_Test/outputs",
         help="Output directory for results"
     )
     parser.add_argument(

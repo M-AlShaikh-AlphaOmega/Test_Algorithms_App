@@ -187,6 +187,10 @@ decoded_csv
 Sample_Dataset_Acc_Gyro/DecodedData/
 Sample_Dataset_Acc_Gyro/DecodedData_Test/
 Sample_Dataset_Acc_Gyro/models/
+
+# Model files (large binary, should not be in git)
+backend/*.pkl
+
 # Review and audit artifacts (temporary)
 *_REVIEW.md
 *_AUDIT.md

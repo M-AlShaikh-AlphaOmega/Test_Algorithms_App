@@ -16,7 +16,7 @@ FIX 6: Tuned Random Forest (class balancing, regularization, more trees)
 """
 
 import json
-import pickle
+import joblib
 import warnings
 from pathlib import Path
 from dataclasses import dataclass, asdict
@@ -1129,9 +1129,8 @@ class CompletePipeline:
         }
         
         Path(filepath).parent.mkdir(parents=True, exist_ok=True)
-        
-        with open(filepath, 'wb') as f:
-            pickle.dump(model_data, f)
+
+        joblib.dump(model_data, filepath)
         
         print(f"\nModel saved to: {filepath}")
 
