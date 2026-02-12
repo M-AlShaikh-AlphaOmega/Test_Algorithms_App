@@ -1,0 +1,27 @@
+# aCare Parkinson's State Detection API - Dependencies
+# Install with: pip install -r requirements.txt
+
+# Web Framework
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+
+# Data Processing
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Validation & Settings
+pydantic>=2.0.0
+pydantic-settings>=2.0.0
+
+# File Upload Support
+python-multipart>=0.0.6
+
+# Development & Testing (optional)
+pytest>=7.4.0
+httpx>=0.26.0  # For async testing
+pytest-asyncio>=0.23.0
+
+# ML Dependencies
+scikit-learn>=1.3.0
+scipy>=1.11.0
+joblib>=1.3.0

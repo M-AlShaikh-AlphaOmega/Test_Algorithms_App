@@ -184,9 +184,9 @@ cython_debug/
 Data
 rw_backup
 decoded_csv
-Decode_Dataset/DecodedData/
-Decode_Dataset/DecodedData_Test/
-Decode_Dataset/models/
+Sample_Dataset_Acc_Gyro/DecodedData/
+Sample_Dataset_Acc_Gyro/DecodedData_Test/
+Sample_Dataset_Acc_Gyro/models/
 # Review and audit artifacts (temporary)
 *_REVIEW.md
 *_AUDIT.md

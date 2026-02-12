@@ -14,7 +14,7 @@ Single file containing EVERYTHING:
 
 Usage:
     .\venv\Scripts\Activate.ps1
-    cd Sample_DataSet\SampleDataset_Jan-29\Test_Train
+    cd Sample_Dataset_Acc\SampleDataset_Jan-29\Test_Train
     python RF_Test.py
 
 Author: aCare System
