@@ -1,25 +1,10 @@
 """
 aCare Parkinson's Detection System - Complete All-In-One
 =========================================================
-
-Single file containing EVERYTHING:
-✓ Data loading (recordings folder + contract sessions)
-✓ Preprocessing (normalization, filtering)
-✓ Feature extraction (43+ clinical features)
-✓ Personalized baseline learning (N-of-1)
-✓ Quality gates (ON/OFF/UNKNOWN)
-✓ Random Forest training
-✓ Evaluation & reporting
-✓ Model saving
-
 Usage:
     .\venv\Scripts\Activate.ps1
     cd Sample_Dataset_Acc\SampleDataset_Jan-29\Test_Train
     python RF_Test.py
-
-Author: aCare System
-Version: 3.0 FINAL
-Date: 2026-02-04
 """
 
 import os
