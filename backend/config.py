@@ -46,7 +46,8 @@ class Settings(BaseSettings):
     tremor_frequency_max: float = 7.0   # Hz
     
     # ML model path (relative to backend directory)
-    model_path: str = "parkinsons_model_acc_gyro.pkl"
+    # model_path: str = "parkinsons_model_acc_gyro.pkl"
+    model_path: str = "rf_model.pkl"
 
     # Confidence thresholds
     confidence_threshold: float = 0.6  # Below this = UNKNOWN state
