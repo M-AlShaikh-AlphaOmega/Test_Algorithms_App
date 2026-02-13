@@ -18,6 +18,7 @@ aCare_AI-ML/
 │   ├── EncryptedData/          # Raw encrypted binary sensor data (gitignored)
 │   └── DataDescription.md      # Data format documentation
 ├── Sample_Dataset_Acc/         # Accelerometer-only sample datasets
+│   ├── SampleDataset_DataByAI/ # Sample Dataset Genereted using AI
 │   ├── SampleDataset_Jan-28/   # First sample (1025 samples, 41s)
 │   └── SampleDataset_Jan-29/   # Second sample with training pipeline
 ├── Sample_Dataset_Acc_Gyro/    # Accelerometer + gyroscope dataset
@@ -47,8 +48,8 @@ cd backend
 uvicorn main:app --reload --host 0.0.0.0 --port 8080
 ```
 
-- Swagger UI: http://localhost:8080/docs
-- Health check: http://localhost:8080/health
+- Swagger UI: http://localhost:8000/docs
+- Health check: http://localhost:8000/health
 
 ### 3. Test Detection
 
