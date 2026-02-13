@@ -1,203 +1,118 @@
-# acare-ml
+# aCare AI/ML - Parkinson's Disease State Detection
 
-Production-ready ML pipeline for Parkinson's disease detection from IMU sensor data.
+ML pipeline and API for detecting Parkinson's patient medication states (ON/OFF) from wearable IMU sensor data.
 
-## Directory Structure
+## Project Structure
 
 ```
-acare-ml/
-├── configs/              # Pipeline configuration files
-│   ├── dataset.yaml      # Data ingestion settings
-│   ├── features.yaml     # Feature extraction config
-│   ├── training.yaml     # Model training hyperparameters
-│   └── inference.yaml    # Inference settings
+aCare_AI-ML/
+├── backend/                    # FastAPI detection API
+│   ├── main.py                 # Application & endpoints
+│   ├── detector.py             # ML and rule-based detectors
+│   ├── utils.py                # CSV parsing, validation, feature extraction
+│   ├── schemas.py              # Pydantic request/response models
+│   ├── config.py               # Centralized settings
+│   ├── test_api.py             # API tests
+│   └── requirements.txt        # Backend-specific dependencies
 ├── data/
-│   ├── raw/              # Original immutable data files
-│   ├── interim/          # Intermediate cleaned data
-│   └── processed/        # Final feature matrices
-├── artifacts/
-│   ├── models/           # Trained model files (.pkl, .joblib)
-│   ├── reports/          # Performance metrics and eval reports
-│   └── figures/          # Plots and visualizations
-├── notebooks/            # Jupyter notebooks for exploration
-├── scripts/              # One-off utility scripts
-├── src/acare_ml/         # Main package source
-│   ├── common/           # Logging, config utilities
-│   ├── domain/           # Business logic, constants, clinical thresholds
-│   ├── dataio/           # Data readers
-│   ├── preprocessing/    # Signal processing transforms
-│   ├── features/         # Feature extractors
-│   ├── models/           # Model definitions
-│   ├── training/         # Training logic
-│   ├── evaluation/       # Metrics, cross-validation, reports
-│   ├── validation/       # Data validation, quality checks
-│   ├── subjects/         # Subject-level operations and splitting
-│   ├── pipelines/        # End-to-end workflows
-│   └── serving/          # Model serving/API
-├── tests/                # Unit and integration tests
-├── docs/                 # Documentation
-│   └── PROJECT_STRUCTURE.md  # Detailed structure guide
-├── pyproject.toml        # Package metadata and dependencies
-├── Makefile              # Development commands
-├── pytest.ini            # Pytest configuration
-└── .env.example          # Environment variables template
+│   ├── EncryptedData/          # Raw encrypted binary sensor data (gitignored)
+│   └── DataDescription.md      # Data format documentation
+├── Sample_Dataset_Acc/         # Accelerometer-only sample datasets
+│   ├── SampleDataset_Jan-28/   # First sample (1025 samples, 41s)
+│   └── SampleDataset_Jan-29/   # Second sample with training pipeline
+├── Sample_Dataset_Acc_Gyro/    # Accelerometer + gyroscope dataset
+│   ├── DecodeDataset.py        # Binary-to-CSV decoder
+│   ├── DecodeDataset_Train_Test/  # Training pipeline (acc+gyro)
+│   └── results/                # Training results
+├── requirements.txt            # Project-wide dependencies
+└── .gitignore
 ```
 
 ## Quick Start
 
-### Installation
+### 1. Set Up Environment
 
 ```bash
-# Clone and navigate
-git clone <repo-url>
-cd acare-ml
-
-# Create virtual environment
 python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
+venv\Scripts\activate          # Windows
+# source venv/bin/activate     # Linux/Mac
 
-# Install in editable mode with dev dependencies
-pip install -e ".[dev]"
+pip install -r requirements.txt
 ```
 
-### Verify Installation
+### 2. Run the API
 
 ```bash
-# Check CLI is accessible
-acare-ml --help
-
-# Or via module
-python -m acare_ml.cli --help
+cd backend
+uvicorn main:app --reload --host 0.0.0.0 --port 8080
 ```
 
-### Run Pipeline
+- Swagger UI: http://localhost:8080/docs
+- Health check: http://localhost:8080/health
+
+### 3. Test Detection
 
 ```bash
-# 1. Build dataset from raw data
-acare-ml build-dataset \
-  --config configs/dataset.yaml \
-  --output-dir data/interim
-
-# 2. Extract features
-acare-ml build-features \
-  --config configs/features.yaml \
-  --input-dir data/interim \
-  --output-dir data/processed
-
-# 3. Train model
-acare-ml train \
-  --config configs/training.yaml \
-  --data-dir data/processed \
-  --output-dir artifacts/models
-
-# 4. Run inference
-acare-ml infer \
-  --model-path artifacts/models/model.pkl \
-  --data-path data/processed/test_features.csv \
-  --output-path artifacts/predictions.csv
+curl -X POST http://localhost:8080/detect \
+  -F "file=@sensor_data.csv"
 ```
 
-## Configuration Files
+## How It Works
 
-| Config | Purpose |
-|--------|---------|
-| `dataset.yaml` | Raw data paths, file patterns, subject/label columns |
-| `features.yaml` | Window size, overlap, sampling rate, feature extractors |
-| `training.yaml` | Model type, hyperparameters, train/test split, random seed |
-| `inference.yaml` | Model path, input data, output path, batch size |
+1. **Data Collection** - IMU sensor data (accelerometer + optional gyroscope) is collected from a wrist-worn device via BLE
+2. **Decoding** - Binary sensor packets are decoded to CSV using the decoder scripts in `Sample_Dataset_Acc/` or `Sample_Dataset_Acc_Gyro/`
+3. **Feature Extraction** - 103 features per window (15 per axis x 6 axes + magnitude/correlation/SVM features) are extracted using sliding windows
+4. **Detection** - A trained Random Forest classifier predicts ON/OFF state. Falls back to rule-based heuristics if no model is available
 
-See [docs/PROJECT_STRUCTURE.md](docs/PROJECT_STRUCTURE.md) for detailed configuration guides.
+## Detection API
 
-## Artifacts
+The backend exposes a single detection endpoint:
 
-All outputs are saved in the `artifacts/` directory:
+| Method | Endpoint  | Description                        |
+|--------|-----------|------------------------------------|
+| POST   | `/detect` | Upload CSV, get ON/OFF prediction  |
+| GET    | `/health` | API health and model status        |
+| GET    | `/config` | Current configuration parameters   |
 
-- **models/**: Serialized model files (`.pkl`, `.joblib`, `.onnx`)
-- **reports/**: JSON metrics, classification reports, evaluation results
-- **figures/**: Feature importance plots, confusion matrices, ROC curves
+Upload a CSV with accelerometer columns (`acc_x`, `acc_y`, `acc_z`) and optionally gyroscope columns (`gyro_x`, `gyro_y`, `gyro_z`). The API returns the detected state, confidence score, explanation, and sensor statistics.
 
-These artifacts are gitignored by default. Use a model registry or DVC for version control.
+## Sensor Data Format
 
-## Development
+CSV files should contain:
 
-### Testing
+| Required Columns | Alternatives                       |
+|------------------|------------------------------------|
+| `acc_x`          | `accel_x`, `accelerometer_x`, `ax`, `x` |
+| `acc_y`          | `accel_y`, `accelerometer_y`, `ay`, `y` |
+| `acc_z`          | `accel_z`, `accelerometer_z`, `az`, `z` |
 
-```bash
-# Run all tests
-make test
+Optional gyroscope columns: `gyro_x`/`gx`, `gyro_y`/`gy`, `gyro_z`/`gz`
 
-# Or directly with pytest
-pytest
+**Requirements**: 5-10 seconds of data at ~25-32 Hz sampling rate.
 
-# With coverage report
-pytest --cov=acare_ml --cov-report=html
-```
+## ML Model
 
-### Code Quality
+The current model is a Random Forest trained on accelerometer + gyroscope data:
+- 206 features (103 raw + 103 baseline z-score deviations)
+- Trained with windowed feature extraction (1s windows, 50% overlap)
+- Model file: `parkinsons_model_acc_gyro.pkl` (gitignored, placed in `backend/`)
 
-```bash
-# Format code
-make format
+## Sample Datasets
 
-# Lint
-make lint
+| Dataset | Sensors | Duration | Purpose |
+|---------|---------|----------|---------|
+| `Sample_Dataset_Acc/Jan-28` | Acc only | 41s | Decoder demonstration |
+| `Sample_Dataset_Acc/Jan-29` | Acc only | 10.9s | Training pipeline demo (acc-only) |
+| `Sample_Dataset_Acc_Gyro/` | Acc + Gyro | Multiple patients | Full training pipeline (acc+gyro) |
 
-# Or use tools directly
-black src/ tests/
-ruff check src/ tests/
-mypy src/
-```
-
-### Makefile Targets
-
-```bash
-make help      # Show available targets
-make install   # Install package with dev dependencies
-make test      # Run tests
-make lint      # Run linter
-make format    # Format code
-make clean     # Remove build artifacts
-```
-
-## Documentation
-
-- **[PROJECT_STRUCTURE.md](docs/PROJECT_STRUCTURE.md)**: Detailed guide on folder purposes, module breakdown, workflow, and best practices
-- **Inline code comments**: Implementation details in source files
-- **Notebooks**: Exploratory analysis examples in `notebooks/`
-
-## Key Concepts
-
-### Data Flow
-
-```
-raw → interim → processed → artifacts
-```
-
-1. **raw**: Original sensor data (immutable)
-2. **interim**: Cleaned, validated data
-3. **processed**: Feature matrices ready for ML
-4. **artifacts**: Models, metrics, predictions
-
-### Avoiding Data Leakage
-
-- Use **subject-level splits** (not random row splits)
-- Compute normalization/scaling on **training data only**
-- Never use test data for feature engineering decisions
-- See [Common Pitfalls](docs/PROJECT_STRUCTURE.md#common-pitfalls) for details
-
-## Requirements
+## Dependencies
 
 - Python 3.11+
-- Dependencies: numpy, pandas, scikit-learn, click, pyyaml
-- Dev tools: pytest, black, ruff, mypy
+- FastAPI, uvicorn (API)
+- pandas, numpy, scipy (data processing)
+- scikit-learn, joblib (ML)
+- See [requirements.txt](requirements.txt) for full list
 
 ## License
 
-MIT
-
-## Contributing
-
-1. Follow existing code structure
-2. Add tests for new features
-3. Run `make format` and `make lint` before committing
-4. Update documentation as needed
+Proprietary - aCare Health Technologies

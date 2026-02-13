@@ -181,8 +181,7 @@ cython_debug/
 .cursorindexingignore
 
 # Dataset
-Data
-rw_backup
+data/EncryptedData/
 decoded_csv
 Sample_Dataset_Acc_Gyro/DecodedData/
 Sample_Dataset_Acc_Gyro/DecodedData_Test/
